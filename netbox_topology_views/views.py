@@ -7,6 +7,7 @@ from dcim.models import (
     Cable,
     CableTermination,
     Device,
+    DeviceBay,
     DeviceRole,
     FrontPort,
     Interface,
@@ -26,6 +27,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.views.generic import View
 from wireless.models import WirelessLink
+from netbox.plugins.utils import get_plugin_config
 from netbox.views.generic import (
     ObjectView,
     ObjectListView,
@@ -322,6 +324,7 @@ def create_edge(
     wireless: Optional[Dict] = None,
     power: Optional[bool] = None,
     interface: Optional[Interface] = None,
+    device_bay: Optional[DeviceBay] = None,
 ):
     cable_a_name = (
         "device A name unknown"
@@ -362,6 +365,13 @@ def create_edge(
     elif power is not None:
         edge["dashes"] = LinePattern().power
         title = "Power Connection"
+
+    elif device_bay is not None:
+        title = "Device bay"
+        edge["width"] = 2
+        edge["dashes"] = LinePattern().device_bay
+        edge["color"] = '#8d99ae'
+        edge["href"] = device_bay.get_absolute_url()
 
     elif interface is not None:
         title = "Interface Connection"
@@ -791,6 +801,39 @@ def get_topology_data(
                     straight_cables=straight_cables,
                     draw_termination_labels=draw_termination_labels,
                     draw_cable_labels=draw_cable_labels,
+                )
+            )
+
+    if get_plugin_config("netbox_topology_views", "draw_device_bays"):
+        if show_neighbors:
+            bay_ends = Q(device_id__in=device_ids) | Q(installed_device_id__in=device_ids)
+        else:
+            bay_ends = Q(device_id__in=device_ids) & Q(installed_device_id__in=device_ids)
+        device_bays = DeviceBay.objects.restrict(user, "view").filter(
+            bay_ends, device__in=visible_devices, installed_device__in=visible_devices
+        ).select_related("device", "installed_device").order_by("device_id", "name")
+        for device_bay in device_bays:
+            for bay_device in (device_bay.device, device_bay.installed_device):
+                if bay_device.pk not in nodes_devices:
+                    nodes_devices[bay_device.pk] = bay_device
+            edge_ids += 1
+            edges.append(
+                create_edge(
+                    edge_id=edge_ids,
+                    termination_a={
+                        "termination_name": device_bay.name,
+                        "termination_device_name": str(device_bay.device),
+                        "device_id": device_bay.device_id,
+                    },
+                    termination_b={
+                        "termination_name": "installed",
+                        "termination_device_name": str(device_bay.installed_device),
+                        "device_id": device_bay.installed_device_id,
+                    },
+                    device_bay=device_bay,
+                    straight_cables=straight_cables,
+                    draw_termination_labels=False,
+                    draw_cable_labels=False,
                 )
             )
 

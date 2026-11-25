@@ -15,6 +15,7 @@ class TopologyViewsConfig(PluginConfig):
         "static_image_directory": "netbox_topology_views/img",
         "allow_coordinates_saving": False,
         "always_save_coordinates": False,
+        "draw_device_bays": False,
     }
 
     def ready(self):

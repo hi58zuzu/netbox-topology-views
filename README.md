@@ -107,6 +107,7 @@ PLUGINS_CONFIG = {
 | static_image_directory   | netbox_topology_views/img                                                                                                                      | (str or pathlib.Path) Specifies the location that images will be loaded from by default. Must be within `STATIC_ROOT`  |
 | allow_coordinates_saving | False                                                                                                                                          | (bool) Set to true if you want to enable the ability to save the coordinates.                           |
 | always_save_coordinates  | False                                                                                                                                          | (bool) Set if you want to enable the option to save coordinates by default. Setting allow_coordinates_saving to true is mandatory.                                             |
+| draw_device_bays         | False                                                                                                                                          | (bool) Draw a dotted line from a parent device (chassis) to each device installed in one of its device bays. |
 
 ### Custom field: coordinates
 

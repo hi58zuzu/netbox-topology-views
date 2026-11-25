@@ -144,6 +144,7 @@ class LinePattern():
     wireless = [2, 10, 2, 10]
     power = [5, 5, 3, 3]
     logical = [1, 10, 1, 10]
+    device_bay = [2, 4]
 
     
 def export_data_to_xml(data: dict):
@@ -207,6 +208,8 @@ def export_data_to_xml(data: dict):
                 dashes = 'dashed=1;dashPattern=6 6;'
             if edge['dashes'] == LinePattern().logical:
                 dashes = 'dashed=1;dashPattern=1 4;strokeWidth=2;'
+            if edge['dashes'] == LinePattern().device_bay:
+                dashes = 'dashed=1;dashPattern=2 4;strokeWidth=2;'
             
         mxcell = doc.createElement('mxCell')
         mxcell.setAttribute('id', 'edge_' + str(edge['id']))

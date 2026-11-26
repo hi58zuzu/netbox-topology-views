@@ -103,6 +103,7 @@ BOOLEAN_OPTIONS = (
     "show_circuit",
     "show_power",
     "show_wireless",
+    "show_device_bays",
     "group_sites",
     "group_locations",
     "group_racks",

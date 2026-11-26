@@ -33,7 +33,7 @@ class DeviceFilterForm(
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet(
             'group', 'ignore_cable_type', 'save_coords', 'show_unconnected', 'show_cables', 'show_wireless',
-            'show_logical_connections', 'show_single_cable_logical_conns', 'show_neighbors',
+            'show_device_bays', 'show_logical_connections', 'show_single_cable_logical_conns', 'show_neighbors',
             'group_sites', 'group_locations', 'group_racks', 'group_virtualchassis', 'straight_cables', 
             'draw_termination_labels', 'draw_cable_labels', 'grid_size', 'node_label_items', name=_("Options")
         ),
@@ -264,6 +264,12 @@ class DeviceFilterForm(
     )
     show_wireless = forms.NullBooleanField(
         label =_('Show Wireless Links'), required=False, initial=False,
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
+    )
+    show_device_bays = forms.NullBooleanField(
+        label=_('Show Device Bays'), required=False, initial=False,
         widget=forms.Select(
             choices=BOOLEAN_WITH_BLANK_CHOICES
         )
@@ -539,6 +545,7 @@ class IndividualOptionsForm(NetBoxModelForm):
                 'show_unconnected',
                 'show_cables',
                 'show_wireless',
+                'show_device_bays',
                 'show_logical_connections',
                 'show_single_cable_logical_conns',
                 'show_neighbors',
@@ -614,6 +621,14 @@ class IndividualOptionsForm(NetBoxModelForm):
         initial=False,
         help_text=_('Displays wireless connections. These connections are '
             'displayed as blue dotted lines.')
+    )
+    show_device_bays = forms.BooleanField(
+        label=_('Show Device Bays'),
+        required=False,
+        initial=False,
+        help_text=_('Displays connections between parent devices and the devices '
+            'installed in their device bays. These connections are displayed '
+            'as grey dotted lines.')
     )
     show_logical_connections = forms.BooleanField(
         label =_('Show Logical Connections'),
@@ -733,7 +748,7 @@ class IndividualOptionsForm(NetBoxModelForm):
         model = IndividualOptions
         fields = [
             'ignore_cable_type', 'preselected_device_roles', 'preselected_tags',
-            'save_coords', 'show_unconnected', 'show_cables', 'show_wireless',
+            'save_coords', 'show_unconnected', 'show_cables', 'show_wireless', 'show_device_bays',
             'show_logical_connections', 'show_single_cable_logical_conns', 'show_neighbors',
             'group_sites', 'group_locations', 'group_racks', 'group_virtualchassis',
             'draw_default_layout', 'straight_cables', 'draw_termination_labels', 'draw_cable_labels', 

@@ -333,6 +333,9 @@ class IndividualOptions(NetBoxModel):
     show_wireless = models.BooleanField(
         default=False
     )
+    show_device_bays = models.BooleanField(
+        default=False
+    )
     group_sites = models.BooleanField(
         default=False
     )

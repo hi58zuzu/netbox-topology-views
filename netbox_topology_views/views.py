@@ -27,7 +27,6 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.views.generic import View
 from wireless.models import WirelessLink
-from netbox.plugins.utils import get_plugin_config
 from netbox.views.generic import (
     ObjectView,
     ObjectListView,
@@ -440,6 +439,7 @@ def get_topology_data(
     show_neighbors: bool,
     show_power: bool,
     show_wireless: bool,
+    show_device_bays: bool,
     group_sites: bool,
     group_locations: bool,
     group_racks: bool,
@@ -804,7 +804,7 @@ def get_topology_data(
                 )
             )
 
-    if get_plugin_config("netbox_topology_views", "draw_device_bays"):
+    if show_device_bays:
         if show_neighbors:
             bay_ends = Q(device_id__in=device_ids) | Q(installed_device_id__in=device_ids)
         else:
@@ -924,6 +924,7 @@ class TopologyHomeView(PermissionRequiredMixin, View):
             if individualOptions.show_circuit: q['show_circuit'] = "True"
             if individualOptions.show_power: q['show_power'] = "True"
             if individualOptions.show_wireless: q['show_wireless'] = "True"
+            if individualOptions.show_device_bays: q['show_device_bays'] = "True"
             if individualOptions.group_sites: q['group_sites'] = "True"
             if individualOptions.group_locations: q['group_locations'] = "True"
             if individualOptions.group_racks: q['group_racks'] = "True"
@@ -1204,6 +1205,7 @@ class TopologyIndividualOptionsView(PermissionRequiredMixin, View):
                 'show_circuit': queryset.show_circuit,
                 'show_power': queryset.show_power,
                 'show_wireless': queryset.show_wireless,
+                'show_device_bays': queryset.show_device_bays,
                 'group_sites': queryset.group_sites,
                 'group_locations': queryset.group_locations,
                 'group_racks': queryset.group_racks,
